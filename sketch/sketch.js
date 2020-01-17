@@ -7,8 +7,22 @@ let label = '';
 
 let slider;
 
+
+function getInputs() {
+  let inputs = [];
+  video.loadPixels();
+  for (let i = 0; i < video.pixels.length; i += 4) {
+    let r = video.pixels[i + 0];
+    let g = video.pixels[i + 1];
+    let b = video.pixels[i + 2];
+    inputs.push(r, g, b);
+  }
+  return inputs;
+}
+
+
 function mousePressed() {
-  wave.start();
+  // wave.start();
 }
 
 function setup() {
@@ -20,10 +34,10 @@ function setup() {
   wave.freq(440);
   wave.amp(0.5);
 
-  slider = createSlider(200, 800, 440);
-  slider.input(function () {
-    wave.freq(slider.value());
-  });
+  slider = createSlider(0, 1, 0.5, 0.01);
+  // slider.input(function () {
+  //   wave.freq(slider.value());
+  // });
 
   video = createCapture(VIDEO, videoReady);
   video.size(videoSize, videoSize);
@@ -35,7 +49,7 @@ function setup() {
     debug: true
   }
   pixelBrain = ml5.neuralNetwork(options);
-  pixelBrain.loadData('pixel_freq2.json', loaded);
+  // pixelBrain.loadData('pixel_freq2.json', loaded);
 }
 
 function loaded() {
@@ -48,19 +62,12 @@ function loaded() {
 
 function finishedTraining() {
   console.log('training complete');
-  wave.amp(0.5);
+  //wave.amp(0.5);
   predictVideo();
 }
 
 function predictVideo() {
-  let inputs = [];
-  video.loadPixels();
-  for (let i = 0; i < video.pixels.length; i += 4) {
-    let r = video.pixels[i + 0];
-    let g = video.pixels[i + 1];
-    let b = video.pixels[i + 2];
-    inputs.push(r, g, b);
-  }
+  let inputs = getInputs();
   pixelBrain.predict(inputs, gotResults);
 }
 
@@ -71,7 +78,7 @@ function gotResults(error, results) {
   }
   let value = results[0].value;
   console.log(value);
-  wave.freq(value);
+  // wave.freq(value);
   slider.value(value);
   predictVideo();
 }
@@ -96,14 +103,7 @@ async function keyPressed() {
 
 
 function addExample() {
-  let inputs = [];
-  video.loadPixels();
-  for (let i = 0; i < video.pixels.length; i += 4) {
-    let r = video.pixels[i + 0];
-    let g = video.pixels[i + 1];
-    let b = video.pixels[i + 2];
-    inputs.push(r, g, b);
-  }
+  let inputs = getInputs();
   let target = [slider.value()];
   console.log("Adding example: " + slider.value());
   pixelBrain.addData(inputs, target);
