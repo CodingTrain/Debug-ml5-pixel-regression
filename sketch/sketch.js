@@ -39,6 +39,7 @@ function setup() {
 }
 
 function loaded() {
+  pixelBrain.normalizeData();
   pixelBrain.train({
     epochs: 50
   }, finishedTraining);
