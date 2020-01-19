@@ -45,6 +45,7 @@ function setup() {
 
   let options = {
     task: 'regression',
+    learningRate: 0.002,
     // hiddenUnits: 150,
     debug: true
   }
